@@ -1,9 +1,7 @@
 
-
 variable "vpc_cidr" {
   description = "Vpc CIDR"
   type        = string
-  default     = "192.0.0.0/20"
 }
 
 variable "public_subnets" {
