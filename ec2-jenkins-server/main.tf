@@ -1,0 +1,86 @@
+
+# virtual private networking
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+
+  name = "t_vpc_1"
+  cidr = var.vpc_cidr
+  azs  = data.aws_availability_zones.azs.names
+
+  public_subnets = var.public_subnet
+
+  enable_dns_hostnames    = true
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "t_vpc_1"
+    Terraform   = "true"
+    Environment = "dev"
+  }
+  public_subnet_tags = {
+    Name = "t_subnet"
+  }
+}
+
+
+# security group
+module "sg" {
+  source = "terraform-aws-modules/security-group/aws"
+
+  name        = "1-sg"
+  description = "Security group test server"
+  vpc_id      = module.vpc.vpc_id
+
+
+  ingress_with_cidr_blocks = [
+    {
+      from_port   = 8080
+      to_port     = 8080
+      protocol    = "tcp"
+      description = "HTTP"
+      cidr_blocks = "0.0.0.0/0"
+    },
+    {
+      from_port   = 22
+      to_port     = 22
+      protocol    = "tcp"
+      description = "SSH"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+  egress_with_cidr_blocks = [
+    {
+      from_port   = 0
+      to_port     = 0
+      protocol    = "-1"
+      cidr_blocks = "0.0.0.0/0"
+    }
+  ]
+  tags = {
+    Name = "security_group"
+  }
+}
+
+#ec2 instance
+module "ec2_instance" {
+  source = "terraform-aws-modules/ec2-instance/aws"
+
+  name = "test_server"
+
+  instance_type               = var.instance_type
+  ami                         = data.aws_ami.host.id
+  key_name                    = "key2"
+  monitoring                  = true
+  vpc_security_group_ids      = [module.sg.security_group_id]
+  subnet_id                   = module.vpc.public_subnets[0]
+  availability_zone           = data.aws_availability_zones.azs.names[0]
+  associate_public_ip_address = true
+  user_data                   = file("install.sh")
+
+
+  tags = {
+    Name        = "server_1"
+    Terraform   = "true"
+    Environment = "dev"
+  }
+}
