@@ -3,3 +3,4 @@ ec2-jenkins-server/.terraform
 ec2-jenkins-server/.terraform.lock.hcl
 eks-cluster/.terraform
 eks-cluster/.terraform.lock.hcl
+terraform-jenkins-eks/.terraform*
