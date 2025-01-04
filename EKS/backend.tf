@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
-    bucket = "cicd-terraform-eks"
-    key    = "eks/terraform.tfstate"
-    region = "us-east-1"
+    bucket = "buc111333555"
+    key    = "ec2-jenkins-server/terraform.tfstate"
+    region = "il-central-1"
   }
 }
