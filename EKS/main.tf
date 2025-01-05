@@ -30,16 +30,6 @@ module "vpc" {
 
 }
 
-resource "aws_kms_alias" "this" {
-  name          = "alias/eks/eks-cluster"
-  target_key_id = aws_kms_key.eks_cluster_key.id
-
-  lifecycle {
-    ignore_changes = [name]
-  }
-}
-
-
 module "eks" {
   source = "terraform-aws-modules/eks/aws"
 
